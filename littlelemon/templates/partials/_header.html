@@ -1,0 +1,10 @@
+{% load static %}
+<header>
+    <img src="{% static 'img/logo.png' %}" />
+</header>
+<nav>
+    <ul>
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'api-menu' %}">MenuAPI</a></li>
+    </ul>
+</nav>
