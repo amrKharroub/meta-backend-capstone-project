@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth.models import User  # , Group
+from django.contrib.auth.models import User, Group
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import MenuItem, Cart, Order, OrderItem, Menu, Booking
 from .serializers import (
     MenuItemSerializer,
-    # UserSerializer,
+    UserSerializer,
     CartSerializer,
     OrderSerializer,
     OrderItemSerializer,
@@ -55,72 +55,72 @@ class SingleMenuItemView(
         return [IsAdminUser()]
 
 
-# class ManagerView(generics.ListCreateAPIView):
-#     queryset = User.objects.filter(groups=Group.objects.get(name="Manager"))
-#     permission_classes = [IsAdminUser]
-#     serializer_class = UserSerializer
+class ManagerView(generics.ListCreateAPIView):
+    queryset = User.objects.filter(groups=Group.objects.get(name="Manager"))
+    permission_classes = [IsAdminUser]
+    serializer_class = UserSerializer
 
-#     def get(self, request):
-#         # returns all managers
-#         queryset = self.get_queryset()
-#         serializer = self.get_serializer(queryset, many=True)
-#         return Response(serializer.data, status.HTTP_200_OK)
+    def get(self, request):
+        # returns all managers
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
 
-#     def post(self, request):
-#         # assign a user to manager group
-#         username = request.data["username"]
-#         if username:
-#             user = get_object_or_404(User, username=username)
-#         else:
-#             return Response(
-#                 {"message": "a username isn't provided"},
-#                 status=status.HTTP_400_BAD_REQUEST,
-#             )
-#         manager = Group.objects.get(name="Manager")
-#         manager.user_set.add(user)
-#         delveryCrew = Group.objects.get(name="Delivery Crew")
-#         delveryCrew.user_set.remove(user)
-#         message = "User {} is set as a manager".format(username)
-#         return Response({"message": message}, status=status.HTTP_201_CREATED)
-
-
-# @api_view(["DELETE"])
-# @permission_classes([IsAdminUser])
-# def RemoveManagerView(request, pk):
-#     user = get_object_or_404(User, pk=pk)
-#     manager = Group.objects.get(name="Manager")
-#     manager.user_set.remove(user)
-#     return Response({"message": "user removed from manager"}, status=status.HTTP_200_OK)
+    def post(self, request):
+        # assign a user to manager group
+        username = request.data["username"]
+        if username:
+            user = get_object_or_404(User, username=username)
+        else:
+            return Response(
+                {"message": "a username isn't provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        manager = Group.objects.get(name="Manager")
+        manager.user_set.add(user)
+        delveryCrew = Group.objects.get(name="Delivery Crew")
+        delveryCrew.user_set.remove(user)
+        message = "User {} is set as a manager".format(username)
+        return Response({"message": message}, status=status.HTTP_201_CREATED)
 
 
-# class DeliveryCrewView(APIView):
-#     permission_classes = [IsAdminUser]
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def RemoveManagerView(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    manager = Group.objects.get(name="Manager")
+    manager.user_set.remove(user)
+    return Response({"message": "user removed from manager"}, status=status.HTTP_200_OK)
 
-#     def get(self, request):
-#         queryset = User.objects.filter(Group.objects.get(name="Delivery Crew"))
-#         serializer = UserSerializer(queryset, many=True)
-#         return Response(serializer.data, status.HTTP_200_OK)
 
-#     def post(self, request):
-#         username = request.data["username"]
-#         if username:
-#             user = get_object_or_404(User, username=username)
-#         else:
-#             return Response(
-#                 {"message": "username required"}, status=status.HTTP_400_BAD_REQUEST
-#             )
-#         delivery_crew = Group.objects.get(name="Delivary Crew")
-#         delivery_crew.user_set.add(user)
-#         message = "User {} is set as a manager".format(username)
-#         return Response({"message": message}, status=status.HTTP_201_CREATED)
+class DeliveryCrewView(APIView):
+    permission_classes = [IsAdminUser]
 
-#     def delete(self, request, pk):
-#         user = get_object_or_404(User, pk=pk)
-#         manager = Group.objects.get(name="delivary crew")
-#         manager.user_set.remove(user)
-#         return Response(
-#             {"message": "user removed from delivery crew"}, status=status.HTTP_200_OK
-#         )
+    def get(self, request):
+        queryset = User.objects.filter(Group.objects.get(name="Delivery Crew"))
+        serializer = UserSerializer(queryset, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def post(self, request):
+        username = request.data["username"]
+        if username:
+            user = get_object_or_404(User, username=username)
+        else:
+            return Response(
+                {"message": "username required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        delivery_crew = Group.objects.get(name="Delivary Crew")
+        delivery_crew.user_set.add(user)
+        message = "User {} is set as a manager".format(username)
+        return Response({"message": message}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        manager = Group.objects.get(name="delivary crew")
+        manager.user_set.remove(user)
+        return Response(
+            {"message": "user removed from delivery crew"}, status=status.HTTP_200_OK
+        )
 
 
 class CartView(APIView):

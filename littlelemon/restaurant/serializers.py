@@ -22,21 +22,19 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "price", "featured", "category", "category_title"]
 
 
-# class GroupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Group
-#         fields = [
-#             "name",
-#         ]
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = "__all__"
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     #groups = GroupSerializer(read_only=True, many=True)
-#     email = serializers.CharField(read_only=True)
+class UserSerializer(serializers.ModelSerializer):
+    groups = GroupSerializer(read_only=True, many=True)
+    email = serializers.CharField(read_only=True)
 
-#     class Meta:
-#         model = User
-#         fields = ["id", "email", "username"]#, "groups"]
+    class Meta:
+        model = User
+        fields = ["id", "email", "username", "groups"]
 
 
 class CartSerializer(serializers.ModelSerializer):
